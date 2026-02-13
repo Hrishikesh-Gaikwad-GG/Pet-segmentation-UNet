@@ -1,0 +1,6 @@
+venv
+*\__pycache__
+Dataset
+*\pet-segmentation-u-net-transfer-learning (1).ipynb
+*.ipynb_checkpoints/
+the-oxfordiiit-pet-dataset.zip
