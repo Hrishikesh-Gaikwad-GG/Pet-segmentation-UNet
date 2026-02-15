@@ -6,9 +6,13 @@ from streamlit_image_select import image_select
 from model import load_model
 from utils import preprocess_image, predict_mask, create_overlay
 import os
+from pathlib import Path
 
 
 # st.set_page_config(layout = 'wide')
+
+BASE_DIR = Path(__file__).resolve().parent
+SAMPLE_DIR = BASE_DIR / 'samples'
 
 st.title('🐱 Pet Segmentation Demo 🐶')
 st.write('Upload as image of a pet and see segmentation results.')
@@ -32,11 +36,11 @@ if mode == 'Upload your pet Image':
     if uploaded_file:
         image = Image.open(uploaded_file).convert('RGB')
 else:
-    sample_dir = 'samples'
-    sample_images = os.listdir(sample_dir)
+
+    sample_images = os.listdir(SAMPLE_DIR)
     image_path = image_select(
         'Select an Image',
-        [os.path.join(sample_dir, img) for img in sample_images],
+        [SAMPLE_DIR / img for img in sample_images],
         use_container_width = False 
     )
 
