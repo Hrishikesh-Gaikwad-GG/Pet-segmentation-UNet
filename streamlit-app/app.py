@@ -2,24 +2,50 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-
+from streamlit_image_select import image_select
 from model import load_model
 from utils import preprocess_image, predict_mask, create_overlay
+import os
 
 
-st.set_page_config(layout = 'wide')
+# st.set_page_config(layout = 'wide')
 
-st.title('Pet Segmentation Demo')
+st.title('🐱 Pet Segmentation Demo 🐶')
 st.write('Upload as image of a pet and see segmentation results.')
 
-model = load_model()
+@st.cache_resource
+def get_model():
+    return load_model()
 
-uploaded_file = st.file_uploader('Upload as image', type = ['jpg', 'png'])
+model = get_model()
+
+mode = st.radio(
+    "Choose input type:",
+    ["Upload your pet Image", "Use Sample Image"]
+)
+
+image = None
+
+if mode == 'Upload your pet Image':
+
+    uploaded_file = st.file_uploader('Upload as image', type = ['jpg', 'png'])
+    if uploaded_file:
+        image = Image.open(uploaded_file).convert('RGB')
+else:
+    sample_dir = 'samples'
+    sample_images = os.listdir(sample_dir)
+    image_path = image_select(
+        'Select an Image',
+        [os.path.join(sample_dir, img) for img in sample_images],
+        use_container_width = False 
+    )
+
+    if image_path:
+        image = Image.open(image_path).convert('RGB')
 
 threshold = st.slider('Mask Threshold', 0.1, 0.9, 0.5, 0.05)
 
-if uploaded_file:
-    image = Image.open(uploaded_file).convert('RGB')
+if image:
     image_np = np.array(image)
 
     input_tensor = preprocess_image(image)
